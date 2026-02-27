@@ -42,6 +42,7 @@ export interface Consultation {
   status: ConsultationStatus;
   consultation_type: ConsultationType;
   symptoms: string | null;
+  medical_history: string | null;
   diagnosis: string | null;
   notes: string | null;
   scheduled_at: string | null;

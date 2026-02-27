@@ -70,7 +70,9 @@ export const consultationApi = {
     patient_id: string;
     consultation_type: ConsultationType;
     symptoms?: string;
+    medical_history?: string;
     scheduled_at?: string;
+    status?: ConsultationStatus;
   }) {
     const { data, error } = await supabase
       .from('consultations')
@@ -95,6 +97,10 @@ export const consultationApi = {
 
     if (error) throw error;
     return data as Consultation | null;
+  },
+
+  async getConsultationById(id: string) {
+    return this.getConsultation(id);
   },
 
   async getPatientConsultations(patientId: string, limit = 20) {

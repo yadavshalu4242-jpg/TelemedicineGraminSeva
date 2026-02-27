@@ -7,7 +7,11 @@ import SymptomsCheckerPage from './pages/patient/SymptomsCheckerPage';
 import ARDiagnosisPage from './pages/patient/ARDiagnosisPage';
 import PrescriptionsPage from './pages/patient/PrescriptionsPage';
 import MedicalRecordsPage from './pages/patient/MedicalRecordsPage';
+import ConsultationsPage from './pages/patient/ConsultationsPage';
+import BookConsultationPage from './pages/patient/BookConsultationPage';
+import ConsultationDetailPage from './pages/patient/ConsultationDetailPage';
 import DoctorDashboard from './pages/doctor/DoctorDashboard';
+import DoctorConsultationsPage from './pages/doctor/DoctorConsultationsPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ForbiddenPage from './pages/ForbiddenPage';
 import NotFound from './pages/NotFound';
@@ -64,7 +68,17 @@ const routes: RouteConfig[] = [
   {
     name: 'Patient Consultations',
     path: '/patient/consultations',
-    element: <PatientDashboard />,
+    element: <ConsultationsPage />,
+  },
+  {
+    name: 'Book Consultation',
+    path: '/patient/consultations/new',
+    element: <BookConsultationPage />,
+  },
+  {
+    name: 'Consultation Detail',
+    path: '/patient/consultations/:id',
+    element: <ConsultationDetailPage />,
   },
   {
     name: 'Patient Prescriptions',
@@ -105,7 +119,12 @@ const routes: RouteConfig[] = [
   {
     name: 'Doctor Consultations',
     path: '/doctor/consultations',
-    element: <DoctorDashboard />,
+    element: <DoctorConsultationsPage />,
+  },
+  {
+    name: 'Doctor Consultation Detail',
+    path: '/doctor/consultations/:id',
+    element: <ConsultationDetailPage />,
   },
   {
     name: 'Doctor Patients',
