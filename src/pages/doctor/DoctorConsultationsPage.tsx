@@ -39,7 +39,7 @@ export default function DoctorConsultationsPage() {
       setPendingConsultations(pending);
     } catch (error) {
       console.error('Failed to load consultations:', error);
-      toast.error('Failed to load consultations');
+      toast.error('परामर्श लोड करने में विफल');
     } finally {
       setLoading(false);
     }
@@ -48,11 +48,11 @@ export default function DoctorConsultationsPage() {
   const handleAccept = async (consultationId: string) => {
     try {
       await consultationApi.assignDoctor(consultationId, profile!.id);
-      toast.success('Consultation accepted successfully');
+      toast.success('परामर्श स्वीकार किया गया');
       loadData();
     } catch (error) {
       console.error('Failed to accept consultation:', error);
-      toast.error('Failed to accept consultation');
+      toast.error('परामर्श स्वीकार करने में विफल');
     }
   };
 
@@ -91,15 +91,15 @@ export default function DoctorConsultationsPage() {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold mb-2">Consultations</h1>
-          <p className="text-muted-foreground">Manage your patient consultations</p>
+          <h1 className="text-3xl font-bold mb-2">परामर्श</h1>
+          <p className="text-muted-foreground">अपने रोगी परामर्श प्रबंधित करें</p>
         </div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="my">My Consultations ({consultations.length})</TabsTrigger>
-            <TabsTrigger value="pending">Pending Requests ({pendingConsultations.length})</TabsTrigger>
+            <TabsTrigger value="my">मेरे परामर्श ({consultations.length})</TabsTrigger>
+            <TabsTrigger value="pending">लंबित अनुरोध ({pendingConsultations.length})</TabsTrigger>
           </TabsList>
 
           {/* My Consultations */}
@@ -115,9 +115,9 @@ export default function DoctorConsultationsPage() {
                 <Card>
                   <CardContent className="flex flex-col items-center justify-center py-12">
                     <Calendar className="h-16 w-16 text-muted-foreground opacity-50 mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No Consultations Yet</h3>
+                    <h3 className="text-lg font-semibold mb-2">अभी तक कोई परामर्श नहीं</h3>
                     <p className="text-muted-foreground text-center">
-                      You haven't accepted any consultations yet. Check the pending requests tab.
+                      आपने अभी तक कोई परामर्श स्वीकार नहीं किया है। लंबित अनुरोध टैब देखें।
                     </p>
                   </CardContent>
                 </Card>
@@ -150,14 +150,14 @@ export default function DoctorConsultationsPage() {
                     <CardContent className="space-y-4">
                       {/* Symptoms */}
                       <div>
-                        <h4 className="text-sm font-semibold mb-2">Symptoms</h4>
+                        <h4 className="text-sm font-semibold mb-2">लक्षण</h4>
                         <p className="text-sm text-muted-foreground line-clamp-2">{consultation.symptoms}</p>
                       </div>
 
                       {/* Diagnosis */}
                       {consultation.diagnosis && (
                         <div>
-                          <h4 className="text-sm font-semibold mb-2">Diagnosis</h4>
+                          <h4 className="text-sm font-semibold mb-2">निदान</h4>
                           <p className="text-sm text-muted-foreground line-clamp-2">{consultation.diagnosis}</p>
                         </div>
                       )}
@@ -167,7 +167,7 @@ export default function DoctorConsultationsPage() {
                         <Link to={`/doctor/consultations/${consultation.id}`} className="flex-1">
                           <Button variant="outline" className="w-full gap-2">
                             <FileText className="h-4 w-4" />
-                            View Details
+                            विवरण देखें
                           </Button>
                         </Link>
                       </div>
@@ -191,9 +191,9 @@ export default function DoctorConsultationsPage() {
                 <Card>
                   <CardContent className="flex flex-col items-center justify-center py-12">
                     <Clock className="h-16 w-16 text-muted-foreground opacity-50 mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No Pending Requests</h3>
+                    <h3 className="text-lg font-semibold mb-2">कोई लंबित अनुरोध नहीं</h3>
                     <p className="text-muted-foreground text-center">
-                      There are no pending consultation requests at the moment.
+                      इस समय कोई लंबित परामर्श अनुरोध नहीं है।
                     </p>
                   </CardContent>
                 </Card>
@@ -207,7 +207,7 @@ export default function DoctorConsultationsPage() {
                             <CardTitle className="text-lg">
                               {consultation.patient?.full_name || 'Unknown Patient'}
                             </CardTitle>
-                            <Badge className="bg-warning/10 text-warning">New Request</Badge>
+                            <Badge className="bg-warning/10 text-warning">नया अनुरोध</Badge>
                             <Badge variant="outline" className="capitalize">
                               {getTypeLabel(consultation.consultation_type)}
                             </Badge>
@@ -224,14 +224,14 @@ export default function DoctorConsultationsPage() {
                     <CardContent className="space-y-4">
                       {/* Symptoms */}
                       <div>
-                        <h4 className="text-sm font-semibold mb-2">Symptoms</h4>
+                        <h4 className="text-sm font-semibold mb-2">लक्षण</h4>
                         <p className="text-sm text-muted-foreground line-clamp-3">{consultation.symptoms}</p>
                       </div>
 
                       {/* Medical History */}
                       {consultation.medical_history && (
                         <div>
-                          <h4 className="text-sm font-semibold mb-2">Medical History</h4>
+                          <h4 className="text-sm font-semibold mb-2">चिकित्सा इतिहास</h4>
                           <p className="text-sm text-muted-foreground line-clamp-2">{consultation.medical_history}</p>
                         </div>
                       )}
@@ -240,12 +240,12 @@ export default function DoctorConsultationsPage() {
                       <div className="flex gap-2 pt-2">
                         <Button onClick={() => handleAccept(consultation.id)} className="flex-1 gap-2">
                           <CheckCircle className="h-4 w-4" />
-                          Accept Consultation
+                          परामर्श स्वीकार करें
                         </Button>
                         <Link to={`/doctor/consultations/${consultation.id}`}>
                           <Button variant="outline" className="gap-2">
                             <FileText className="h-4 w-4" />
-                            View Details
+                            विवरण देखें
                           </Button>
                         </Link>
                       </div>
