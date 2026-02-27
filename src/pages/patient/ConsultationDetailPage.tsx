@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { consultationApi, prescriptionApi } from '@/db/api';
 import type { Consultation } from '@/types';
-import { Calendar, User, FileText, ArrowLeft, CheckCircle, XCircle, Clock, MessageSquare } from 'lucide-react';
+import { Calendar, User, FileText, ArrowLeft, CheckCircle, XCircle, Clock, MessageSquare, Video, Mic, UserIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -143,6 +143,36 @@ export default function ConsultationDetailPage() {
     }
   };
 
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case 'video':
+        return 'Video Call';
+      case 'voice':
+        return 'Voice Call';
+      case 'chat':
+        return 'Chat';
+      case 'in_person':
+        return 'In Person';
+      default:
+        return type;
+    }
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'video':
+        return Video;
+      case 'voice':
+        return Mic;
+      case 'chat':
+        return MessageSquare;
+      case 'in_person':
+        return UserIcon;
+      default:
+        return MessageSquare;
+    }
+  };
+
   if (loading) {
     return (
       <MainLayout>
@@ -233,8 +263,15 @@ export default function ConsultationDetailPage() {
               <div>
                 <Label className="text-muted-foreground">Consultation Type</Label>
                 <div className="flex items-center gap-2 mt-1">
-                  <MessageSquare className="h-4 w-4" />
-                  <span className="font-medium capitalize">{consultation.consultation_type.replace('_', ' ')}</span>
+                  {(() => {
+                    const TypeIcon = getTypeIcon(consultation.consultation_type);
+                    return (
+                      <>
+                        <TypeIcon className="h-4 w-4" />
+                        <span className="font-medium">{getTypeLabel(consultation.consultation_type)}</span>
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
               <div>

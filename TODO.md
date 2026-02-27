@@ -73,11 +73,12 @@
 ### Database & Backend
 - ✅ Supabase integration
 - ✅ Complete database schema with medical_history field
-- ✅ Row Level Security policies
+- ✅ Row Level Security policies (doctors can view all consultations)
 - ✅ Storage bucket for medical images
 - ✅ Edge Functions for AI, STT, TTS
 - ✅ Comprehensive API layer with all consultation methods
 - ✅ Sample symptoms database
+- ✅ **All 4 consultation types supported: video, voice, chat, in_person** ⭐
 
 ### Patient Features
 - ✅ Patient dashboard with statistics
@@ -86,19 +87,21 @@
 - ✅ **AR diagnosis with camera and visual guides** ⭐
 - ✅ **Prescriptions page with QR code generation** ⭐
 - ✅ **Medical records management with image/video support** ⭐
-- ✅ **Full consultation workflow** ⭐
+- ✅ **Full consultation workflow with all types working** ⭐
   - ✅ View all consultations with status filtering (all/pending/active/completed)
-  - ✅ Book new consultation with symptoms and medical history
-  - ✅ View consultation details with patient/doctor info
+  - ✅ **Book consultation with 4 types: Video Call, Voice Call, Chat, In Person** ⭐
+  - ✅ **Each type displays with proper icon (Video, Mic, MessageSquare, User)** ⭐
+  - ✅ View consultation details with patient/doctor info and type badge
   - ✅ Cancel pending consultations
   - ✅ Track consultation status in real-time
 
 ### Doctor Features
 - ✅ Doctor dashboard with pending requests
 - ✅ **Complete consultation management system** ⭐
-  - ✅ View pending consultation requests from all patients
+  - ✅ **View ALL pending consultation requests (fixed policy)** ⭐
   - ✅ Accept consultation requests (auto-assigns doctor)
   - ✅ View assigned consultations (my consultations tab)
+  - ✅ **Consultation type displayed with icons in all views** ⭐
   - ✅ Add diagnosis and treatment recommendations
   - ✅ Add additional clinical notes
   - ✅ Complete consultations

@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { consultationApi } from '@/db/api';
 import type { Consultation } from '@/types';
-import { Calendar, Clock, User, FileText, CheckCircle } from 'lucide-react';
+import { Calendar, Clock, User, FileText, CheckCircle, Video, Mic, MessageSquare, UserIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -86,6 +86,21 @@ export default function DoctorConsultationsPage() {
     }
   };
 
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'video':
+        return Video;
+      case 'voice':
+        return Mic;
+      case 'chat':
+        return MessageSquare;
+      case 'in_person':
+        return UserIcon;
+      default:
+        return MessageSquare;
+    }
+  };
+
   return (
     <MainLayout>
       <div className="space-y-6">
@@ -132,10 +147,20 @@ export default function DoctorConsultationsPage() {
                               {consultation.patient?.full_name || 'Unknown Patient'}
                             </CardTitle>
                             <Badge className={getStatusColor(consultation.status)}>
-                              {consultation.status.replace('_', ' ')}
+                              {consultation.status === 'pending' ? 'Pending' : 
+                               consultation.status === 'in_progress' ? 'In Progress' :
+                               consultation.status === 'completed' ? 'Completed' : 'Cancelled'}
                             </Badge>
-                            <Badge variant="outline" className="capitalize">
-                              {getTypeLabel(consultation.consultation_type)}
+                            <Badge variant="outline" className="capitalize gap-1">
+                              {(() => {
+                                const TypeIcon = getTypeIcon(consultation.consultation_type);
+                                return (
+                                  <>
+                                    <TypeIcon className="h-3 w-3" />
+                                    {getTypeLabel(consultation.consultation_type)}
+                                  </>
+                                );
+                              })()}
                             </Badge>
                           </div>
                           <CardDescription className="space-y-1">
@@ -207,9 +232,17 @@ export default function DoctorConsultationsPage() {
                             <CardTitle className="text-lg">
                               {consultation.patient?.full_name || 'Unknown Patient'}
                             </CardTitle>
-                            <Badge className="bg-warning/10 text-warning">नया अनुरोध</Badge>
-                            <Badge variant="outline" className="capitalize">
-                              {getTypeLabel(consultation.consultation_type)}
+                            <Badge className="bg-warning/10 text-warning">New Request</Badge>
+                            <Badge variant="outline" className="capitalize gap-1">
+                              {(() => {
+                                const TypeIcon = getTypeIcon(consultation.consultation_type);
+                                return (
+                                  <>
+                                    <TypeIcon className="h-3 w-3" />
+                                    {getTypeLabel(consultation.consultation_type)}
+                                  </>
+                                );
+                              })()}
                             </Badge>
                           </div>
                           <CardDescription className="space-y-1">

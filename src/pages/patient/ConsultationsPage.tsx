@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { consultationApi } from '@/db/api';
 import type { Consultation } from '@/types';
-import { Calendar, Clock, User, Plus, FileText } from 'lucide-react';
+import { Calendar, Clock, User, Plus, FileText, Video, Mic, MessageSquare, UserIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -67,6 +67,21 @@ export default function ConsultationsPage() {
         return 'In Person';
       default:
         return type;
+    }
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'video':
+        return Video;
+      case 'voice':
+        return Mic;
+      case 'chat':
+        return MessageSquare;
+      case 'in_person':
+        return UserIcon;
+      default:
+        return MessageSquare;
     }
   };
 
@@ -139,15 +154,23 @@ export default function ConsultationsPage() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <CardTitle className="text-lg">
-                              परामर्श #{consultation.id.slice(0, 8)}
+                              Consultation #{consultation.id.slice(0, 8)}
                             </CardTitle>
                             <Badge className={getStatusColor(consultation.status)}>
-                              {consultation.status === 'pending' ? 'लंबित' : 
-                               consultation.status === 'in_progress' ? 'प्रगति में' :
-                               consultation.status === 'completed' ? 'पूर्ण' : 'रद्द'}
+                              {consultation.status === 'pending' ? 'Pending' : 
+                               consultation.status === 'in_progress' ? 'In Progress' :
+                               consultation.status === 'completed' ? 'Completed' : 'Cancelled'}
                             </Badge>
-                            <Badge variant="outline" className="capitalize">
-                              {getTypeLabel(consultation.consultation_type)}
+                            <Badge variant="outline" className="capitalize gap-1">
+                              {(() => {
+                                const TypeIcon = getTypeIcon(consultation.consultation_type);
+                                return (
+                                  <>
+                                    <TypeIcon className="h-3 w-3" />
+                                    {getTypeLabel(consultation.consultation_type)}
+                                  </>
+                                );
+                              })()}
                             </Badge>
                           </div>
                           <CardDescription className="space-y-1">
