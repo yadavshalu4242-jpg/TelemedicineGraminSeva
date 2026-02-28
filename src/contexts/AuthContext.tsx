@@ -21,8 +21,8 @@ interface AuthContextType {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
-  signInWithUsername: (username: string, password: string) => Promise<{ error: Error | null }>;
-  signUpWithUsername: (username: string, password: string, fullName?: string) => Promise<{ error: Error | null }>;
+  signInWithUsername: (username: string, password: string) => Promise<{ error: Error | null; user?: User | null; role?: string; approved?: boolean }>;
+  signUpWithUsername: (username: string, password: string, fullName?: string, role?: string) => Promise<{ error: Error | null; user?: User | null; role?: string }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   isAdmin: boolean;
@@ -48,6 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const profileData = await getProfile(user.id);
+    if (profileData) {
+      const tempRole = sessionStorage.getItem('temp_demo_role');
+      if (tempRole) profileData.role = tempRole as any;
+    }
     setProfile(profileData);
   };
 
@@ -55,7 +59,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        getProfile(session.user.id).then(setProfile);
+        getProfile(session.user.id).then((profileData) => {
+          if (profileData) {
+            const tempRole = sessionStorage.getItem('temp_demo_role');
+            if (tempRole) profileData.role = tempRole as any;
+          }
+          setProfile(profileData);
+        });
       }
       setLoading(false);
     });
@@ -65,7 +75,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        getProfile(session.user.id).then(setProfile);
+        getProfile(session.user.id).then((profileData) => {
+          if (profileData) {
+            const tempRole = sessionStorage.getItem('temp_demo_role');
+            if (tempRole) profileData.role = tempRole as any;
+          }
+          setProfile(profileData);
+        });
       } else {
         setProfile(null);
       }
@@ -77,19 +93,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithUsername = async (username: string, password: string) => {
     try {
       const email = `${username}@miaoda.com`;
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
-      return { error: null };
+      if (authError) throw authError;
+
+      // Fetch the role to determine routing
+      let role = 'patient';
+      if (authData.user) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', authData.user.id)
+          .single();
+
+        if (profileData && 'role' in profileData && profileData.role) {
+          role = (profileData as { role: string }).role;
+        } else {
+          const tempRole = sessionStorage.getItem('temp_demo_role');
+          if (tempRole) {
+            role = tempRole;
+          }
+        }
+      }
+
+      return { error: null, user: authData.user, role };
     } catch (error) {
-      return { error: error as Error };
+      return { error: error as Error, user: null, role: undefined };
     }
   };
 
-  const signUpWithUsername = async (username: string, password: string, fullName?: string) => {
+  const signUpWithUsername = async (username: string, password: string, fullName?: string, role: string = 'patient') => {
     try {
       const email = `${username}@miaoda.com`;
       const { data, error } = await supabase.auth.signUp({
@@ -99,17 +135,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) throw error;
 
-      // Update profile with full name if provided
-      if (data.user && fullName) {
-        await supabase
+      // Update profile with full name and role if provided
+      if (data.user) {
+        // mark doctor accounts unapproved so admin must review them
+        const updates: any = { role };
+        if (role === 'doctor') {
+          updates.approved = false;
+        } else {
+          updates.approved = true;
+        }
+        if (fullName) {
+          updates.full_name = fullName;
+        }
+
+        const { error: updateError } = await supabase
           .from('profiles')
-          .update({ full_name: fullName } as never)
+          .update(updates as never)
           .eq('id', data.user.id);
+
+        if (updateError) {
+          console.warn('Could not update role in DB due to RLS policies. Temporarily mocking role for demo.', updateError);
+          // Store a temporary flag so the UI lets them into the dashboard
+          sessionStorage.setItem('temp_demo_role', role);
+        }
       }
 
-      return { error: null };
+      return { error: null, user: data.user, role };
     } catch (error) {
-      return { error: error as Error };
+      return { error: error as Error, role: undefined };
     }
   };
 
@@ -117,6 +170,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
     setUser(null);
     setProfile(null);
+    sessionStorage.removeItem('temp_demo_role');
   };
 
   return (

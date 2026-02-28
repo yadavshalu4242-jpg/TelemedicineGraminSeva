@@ -58,13 +58,13 @@ export default function ConsultationsPage() {
   const getTypeLabel = (type: string) => {
     switch (type) {
       case 'video':
-        return 'Video Call';
+        return t('consultation.type.video');
       case 'voice':
-        return 'Voice Call';
+        return t('consultation.type.voice');
       case 'chat':
-        return 'Chat';
+        return t('consultation.type.chat');
       case 'in_person':
-        return 'In Person';
+        return t('consultation.type.inPerson');
       default:
         return type;
     }
@@ -103,13 +103,13 @@ export default function ConsultationsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2">परामर्श</h1>
-            <p className="text-muted-foreground">अपने चिकित्सा परामर्श प्रबंधित करें</p>
+            <h1 className="text-3xl font-bold mb-2">{t('nav.consultations')}</h1>
+            <p className="text-muted-foreground">{t('consultation.manage')}</p>
           </div>
           <Link to="/patient/consultations/new">
             <Button className="gap-2">
               <Plus className="h-4 w-4" />
-              परामर्श बुक करें
+              {t('consultation.book')}
             </Button>
           </Link>
         </div>
@@ -117,10 +117,10 @@ export default function ConsultationsPage() {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="all">सभी ({counts.all})</TabsTrigger>
-            <TabsTrigger value="pending">लंबित ({counts.pending})</TabsTrigger>
-            <TabsTrigger value="in_progress">सक्रिय ({counts.in_progress})</TabsTrigger>
-            <TabsTrigger value="completed">पूर्ण ({counts.completed})</TabsTrigger>
+            <TabsTrigger value="all">{t('consultation.all')} ({counts.all})</TabsTrigger>
+            <TabsTrigger value="pending">{t('consultation.pending')} ({counts.pending})</TabsTrigger>
+            <TabsTrigger value="in_progress">{t('consultation.inProgress')} ({counts.in_progress})</TabsTrigger>
+            <TabsTrigger value="completed">{t('consultation.completed')} ({counts.completed})</TabsTrigger>
           </TabsList>
 
           <TabsContent value={activeTab} className="mt-6">
@@ -135,14 +135,14 @@ export default function ConsultationsPage() {
                 <Card>
                   <CardContent className="flex flex-col items-center justify-center py-12">
                     <Calendar className="h-16 w-16 text-muted-foreground opacity-50 mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">कोई परामर्श नहीं मिला</h3>
+                    <h3 className="text-lg font-semibold mb-2">{t('consultation.notFound')}</h3>
                     <p className="text-muted-foreground text-center mb-4">
                       {activeTab === 'all'
-                        ? "आपने अभी तक कोई परामर्श बुक नहीं किया है"
-                        : `कोई ${activeTab === 'pending' ? 'लंबित' : activeTab === 'in_progress' ? 'सक्रिय' : 'पूर्ण'} परामर्श नहीं`}
+                        ? t('consultation.notFoundDesc')
+                        : activeTab === 'pending' ? t('consultation.noPending') : activeTab === 'in_progress' ? t('consultation.noInProgress') : t('consultation.noCompleted')}
                     </p>
                     <Link to="/patient/consultations/new">
-                      <Button>अपना पहला परामर्श बुक करें</Button>
+                      <Button>{t('consultation.bookFirst')}</Button>
                     </Link>
                   </CardContent>
                 </Card>
@@ -157,9 +157,9 @@ export default function ConsultationsPage() {
                               Consultation #{consultation.id.slice(0, 8)}
                             </CardTitle>
                             <Badge className={getStatusColor(consultation.status)}>
-                              {consultation.status === 'pending' ? 'Pending' : 
-                               consultation.status === 'in_progress' ? 'In Progress' :
-                               consultation.status === 'completed' ? 'Completed' : 'Cancelled'}
+                              {consultation.status === 'pending' ? t('consultation.status.pending') :
+                                consultation.status === 'in_progress' ? t('consultation.status.inProgress') :
+                                  consultation.status === 'completed' ? t('consultation.status.completed') : t('consultation.status.cancelled')}
                             </Badge>
                             <Badge variant="outline" className="capitalize gap-1">
                               {(() => {
@@ -196,14 +196,14 @@ export default function ConsultationsPage() {
                     <CardContent className="space-y-4">
                       {/* Symptoms */}
                       <div>
-                        <h4 className="text-sm font-semibold mb-2">लक्षण</h4>
+                        <h4 className="text-sm font-semibold mb-2">{t('consultation.symptoms')}</h4>
                         <p className="text-sm text-muted-foreground line-clamp-2">{consultation.symptoms}</p>
                       </div>
 
                       {/* Diagnosis */}
                       {consultation.diagnosis && (
                         <div>
-                          <h4 className="text-sm font-semibold mb-2">निदान</h4>
+                          <h4 className="text-sm font-semibold mb-2">{t('consultation.diagnosis')}</h4>
                           <p className="text-sm text-muted-foreground">{consultation.diagnosis}</p>
                         </div>
                       )}
@@ -213,7 +213,7 @@ export default function ConsultationsPage() {
                         <Link to={`/patient/consultations/${consultation.id}`} className="flex-1">
                           <Button variant="outline" className="w-full gap-2">
                             <FileText className="h-4 w-4" />
-                            विवरण देखें
+                            {t('consultation.viewDetails')}
                           </Button>
                         </Link>
                         {consultation.status === 'pending' && (
@@ -221,20 +221,20 @@ export default function ConsultationsPage() {
                             variant="outline"
                             className="text-destructive hover:text-destructive"
                             onClick={async () => {
-                              if (confirm('क्या आप वाकई इस परामर्श को रद्द करना चाहते हैं?')) {
+                              if (confirm(t('consultation.cancelConfirm'))) {
                                 try {
                                   await consultationApi.updateConsultation(consultation.id, {
                                     status: 'cancelled',
                                   });
-                                  toast.success('परामर्श रद्द कर दिया गया');
+                                  toast.success(t('consultation.cancelSuccess'));
                                   loadConsultations();
                                 } catch (error) {
-                                  toast.error('परामर्श रद्द करने में विफल');
+                                  toast.error(t('consultation.cancelError'));
                                 }
                               }
                             }}
                           >
-                            रद्द करें
+                            {t('common.cancel')}
                           </Button>
                         )}
                       </div>

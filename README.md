@@ -1,3 +1,7 @@
+# Welcome to Your Miaoda Project
+Miaoda Application Link URL
+    URL:https://medo.dev/projects/app-9x8mtlzrh2wx
+
 # GraminSeva Telemedicine PWA
 
 A comprehensive telemedicine Progressive Web Application designed specifically for rural healthcare delivery in India. The platform connects patients in rural areas with healthcare providers through multiple communication channels, featuring AI-powered assistance, voice and video consultation capabilities, offline functionality, and multi-language support optimized for low-bandwidth environments.

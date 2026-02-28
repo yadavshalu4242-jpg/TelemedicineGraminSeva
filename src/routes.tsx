@@ -11,8 +11,12 @@ import ConsultationsPage from './pages/patient/ConsultationsPage';
 import BookConsultationPage from './pages/patient/BookConsultationPage';
 import ConsultationDetailPage from './pages/patient/ConsultationDetailPage';
 import DoctorDashboard from './pages/doctor/DoctorDashboard';
+import DoctorPendingPage from './pages/doctor/DoctorPending';
 import DoctorConsultationsPage from './pages/doctor/DoctorConsultationsPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminPatients from './pages/admin/AdminPatients';
+import AdminDoctors from './pages/admin/AdminDoctors';
+import AdminSettings from './pages/admin/AdminSettings';
 import ForbiddenPage from './pages/ForbiddenPage';
 import NotFound from './pages/NotFound';
 
@@ -102,6 +106,12 @@ const routes: RouteConfig[] = [
     element: <DoctorDashboard />,
   },
   {
+    name: 'Doctor Pending',
+    path: '/doctor/pending',
+    element: <DoctorPendingPage />,
+    visible: false,
+  },
+  {
     name: 'Doctor AI Chat',
     path: '/doctor/ai-chat',
     element: <AIChatPage />,
@@ -155,17 +165,17 @@ const routes: RouteConfig[] = [
   {
     name: 'Admin Patients',
     path: '/admin/patients',
-    element: <AdminDashboard />,
+    element: <AdminPatients />,
   },
   {
     name: 'Admin Doctors',
     path: '/admin/doctors',
-    element: <AdminDashboard />,
+    element: <AdminDoctors />,
   },
   {
     name: 'Admin Settings',
     path: '/admin/settings',
-    element: <AdminDashboard />,
+    element: <AdminSettings />,
   },
   {
     name: 'Admin AI Chat',

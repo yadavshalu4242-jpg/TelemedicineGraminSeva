@@ -5,12 +5,6 @@
     import autoprefixer from "autoprefixer";
     import fs from "fs/promises";
     import path from "path";
-    import {
-      makeTagger,
-      injectedGuiListenerPlugin,
-      injectOnErrorPlugin,
-      monitorPlugin
-    } from "miaoda-sc-plugin";
 
     const env: ConfigEnv = { command: "serve", mode: "development" };
     const configFile = path.resolve(__dirname, "vite.config.ts");
@@ -22,11 +16,6 @@
       // 将 Vite 缓存目录设置为项目本地目录，避免在 /workspace/node_modules/ 下创建
       cacheDir: path.resolve(__dirname, "node_modules/.vite"),
       plugins: [
-        makeTagger(),
-        injectedGuiListenerPlugin({
-          path: 'https://miaoda-resource-static.s3cdn.medo.dev/common/v2/injected.js'
-        }),
-        injectOnErrorPlugin(),
         ...(userConfig?.plugins || []),
         
 {
@@ -113,16 +102,7 @@
       ]
     };
   }
-},
-,
-        monitorPlugin(
-          {
-            scriptSrc: 'https://miaoda-resource-static.s3cdn.medo.dev/sentry/browser.sentry.min.js',
-            sentryDsn: 'https://e3c07b90fcb5207f333d50ac24a99d3e@sentry.miaoda.cn/233',
-            environment: 'undefined',
-            appId: 'app-9x8mtlzrh2wx'
-          }
-        )
+}
       ]
     });
     

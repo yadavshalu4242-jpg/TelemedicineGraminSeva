@@ -27,6 +27,7 @@ export interface Profile {
   email: string | null;
   phone: string | null;
   role: UserRole;
+  approved?: boolean; // doctors must be approved by admin before accessing dashboard
   full_name: string | null;
   avatar_url: string | null;
   language: Language;

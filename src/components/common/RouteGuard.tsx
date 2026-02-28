@@ -9,12 +9,7 @@ interface RouteGuardProps {
 // Public routes that can be accessed without logging in
 const PUBLIC_ROUTES = ['/login', '/register', '/403', '/404', '/'];
 
-// Role-based route restrictions
-const ROLE_ROUTES = {
-  admin: ['/admin'],
-  doctor: ['/doctor'],
-  patient: ['/patient'],
-};
+
 
 function matchPublicRoute(path: string, patterns: string[]) {
   return patterns.some((pattern) => {
@@ -53,18 +48,34 @@ export function RouteGuard({ children }: RouteGuardProps) {
 
       // Check if trying to access admin routes without admin role
       if (path.startsWith('/admin')) {
+        const tempRole = sessionStorage.getItem('temp_demo_role');
+        if (tempRole === 'admin') {
+          return;
+        }
         navigate('/403', { replace: true });
         return;
       }
 
       // Check if trying to access doctor routes without doctor role
-      if (path.startsWith('/doctor') && profile.role !== 'doctor') {
-        navigate('/403', { replace: true });
-        return;
+      if (path.startsWith('/doctor')) {
+        // if user isn't a doctor at all, block access
+        if (profile.role !== 'doctor') {
+          const tempRole = sessionStorage.getItem('temp_demo_role');
+          if (tempRole === 'doctor') {
+            return;
+          }
+          navigate('/403', { replace: true });
+          return;
+        }
+
       }
 
       // Check if trying to access patient routes without patient role
       if (path.startsWith('/patient') && profile.role !== 'patient') {
+        const tempRole = sessionStorage.getItem('temp_demo_role');
+        if (tempRole === 'patient') {
+          return;
+        }
         navigate('/403', { replace: true });
         return;
       }

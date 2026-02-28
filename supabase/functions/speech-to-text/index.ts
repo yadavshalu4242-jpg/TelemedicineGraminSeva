@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
     }
 
     // Get API key from environment
-    const apiKey = Deno.env.get('INTEGRATIONS_API_KEY');
+    const apiKey = Deno.env.get('OPENAI_API_KEY');
     if (!apiKey) {
       return new Response(
         JSON.stringify({ error: 'API key not configured' }),
@@ -36,13 +36,13 @@ Deno.serve(async (req) => {
     whisperFormData.append('response_format', responseFormat as string);
     whisperFormData.append('language', language as string);
 
-    // Call Whisper API
+    // Call OpenAI Whisper API directly
     const whisperResponse = await fetch(
-      'https://app-9x8mtlzrh2wx-api-DY8MNQoqOnMa.gateway.appmedo.com/v1/audio/transcriptions',
+      'https://api.openai.com/v1/audio/transcriptions',
       {
         method: 'POST',
         headers: {
-          'X-Gateway-Authorization': `Bearer ${apiKey}`,
+          'Authorization': `Bearer ${apiKey}`,
         },
         body: whisperFormData,
       }

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layouts/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { consultationApi, prescriptionApi } from '@/db/api';
+import { consultationApi } from '@/db/api';
 import type { Consultation } from '@/types';
 import { Calendar, User, FileText, ArrowLeft, CheckCircle, XCircle, Clock, MessageSquare, Video, Mic, UserIcon } from 'lucide-react';
 import { format } from 'date-fns';
@@ -19,8 +18,8 @@ import { toast } from 'sonner';
 export default function ConsultationDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { profile, isDoctor, isPatient } = useAuth();
-  const { t } = useLanguage();
+  const { profile, isDoctor } = useAuth();
+  // const { t } = useLanguage();
   const [consultation, setConsultation] = useState<Consultation | null>(null);
   const [loading, setLoading] = useState(true);
   const [diagnosis, setDiagnosis] = useState('');
@@ -38,8 +37,8 @@ export default function ConsultationDetailPage() {
       setLoading(true);
       const data = await consultationApi.getConsultationById(id!);
       setConsultation(data);
-      setDiagnosis(data.diagnosis || '');
-      setNotes(data.notes || '');
+      setDiagnosis(data?.diagnosis || '');
+      setNotes(data?.notes || '');
     } catch (error) {
       console.error('Failed to load consultation:', error);
       toast.error('Failed to load consultation details');

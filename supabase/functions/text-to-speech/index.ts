@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { input, voice = 'heart', response_format = 'mp3' } = await req.json();
+    const { input, voice = 'alloy', response_format = 'mp3' } = await req.json();
 
     if (!input) {
       return new Response(
@@ -19,7 +19,7 @@ Deno.serve(async (req) => {
     }
 
     // Get API key from environment
-    const apiKey = Deno.env.get('INTEGRATIONS_API_KEY');
+    const apiKey = Deno.env.get('OPENAI_API_KEY');
     if (!apiKey) {
       return new Response(
         JSON.stringify({ error: 'API key not configured' }),
@@ -27,16 +27,17 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Call TTS API
+    // Call OpenAI TTS API directly
     const ttsResponse = await fetch(
-      'https://app-9x8mtlzrh2wx-api-GYX1lzGw01Xa.gateway.appmedo.com/v1/audio/speech',
+      'https://api.openai.com/v1/audio/speech',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Gateway-Authorization': `Bearer ${apiKey}`,
+          'Authorization': `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
+          model: 'tts-1',
           input,
           voice,
           response_format,

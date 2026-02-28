@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { MainLayout } from '@/components/layouts/MainLayout';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { profileApi } from '@/db/api';
 import type { Profile } from '@/types';
-import { Users, UserCog, Activity, TrendingUp } from 'lucide-react';
+import { Users, UserCog, Activity, TrendingUp, Settings } from 'lucide-react';
 
 export default function AdminDashboard() {
-  const { t } = useLanguage();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,10 +45,17 @@ export default function AdminDashboard() {
     },
     {
       title: 'Doctors',
-      value: profiles.filter((p) => p.role === 'doctor').length,
+      value: profiles.filter((p) => p.role === 'doctor' && p.approved).length,
       icon: UserCog,
       color: 'text-success',
       bgColor: 'bg-success/10',
+    },
+    {
+      title: 'Pending Doctors',
+      value: profiles.filter((p) => p.role === 'doctor' && !p.approved).length,
+      icon: UserCog,
+      color: 'text-warning',
+      bgColor: 'bg-warning/10',
     },
     {
       title: 'Admins',
@@ -62,6 +69,12 @@ export default function AdminDashboard() {
   return (
     <MainLayout>
       <div className="space-y-6">
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <p className="text-muted-foreground mt-1">Welcome to the system administration panel</p>
+        </div>
+
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((stat) => {
@@ -134,34 +147,58 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
+        {/* Management Panels */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <CardHeader>
-              <CardTitle className="text-base">Manage Users</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">View and manage all system users</p>
-            </CardContent>
-          </Card>
+          <Link to="/admin/patients">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Users className="h-5 w-5" />
+                  Patient Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">View and manage all registered patients</p>
+                <Button variant="outline" className="w-full">
+                  Manage Patients →
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <CardHeader>
-              <CardTitle className="text-base">Doctor Management</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Manage healthcare providers</p>
-            </CardContent>
-          </Card>
+          <Link to="/admin/doctors">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <UserCog className="h-5 w-5" />
+                  Doctor Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">Manage healthcare providers and verify credentials</p>
+                <Button variant="outline" className="w-full">
+                  Manage Doctors →
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <CardHeader>
-              <CardTitle className="text-base">System Settings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Configure platform settings</p>
-            </CardContent>
-          </Card>
+          <Link to="/admin/settings">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Settings className="h-5 w-5" />
+                  System Settings
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">Configure platform-wide settings and features</p>
+                <Button variant="outline" className="w-full">
+                  Configure Settings →
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       </div>
     </MainLayout>

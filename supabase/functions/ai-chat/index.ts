@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
     }
 
     // Get API key from environment
-    const apiKey = Deno.env.get('INTEGRATIONS_API_KEY');
+    const apiKey = Deno.env.get('OPENAI_API_KEY');
     if (!apiKey) {
       return new Response(
         JSON.stringify({ error: 'API key not configured' }),
@@ -34,31 +34,35 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Format messages for Gemini API
-    const contents: ChatMessage[] = messages.map((msg: { role: string; content: string }) => ({
-      role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.content }],
+    // Format messages for OpenAI API
+    const contents = messages.map((msg: { role: string; content: string }) => ({
+      role: msg.role === 'user' ? 'user' : 'assistant',
+      content: msg.content,
     }));
 
-    // Call Gemini API
-    const geminiResponse = await fetch(
-      'https://app-9x8mtlzrh2wx-api-VaOwP8E7dJqa.gateway.appmedo.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse',
+    // Call OpenAI API directly
+    const openaiResponse = await fetch(
+      'https://api.openai.com/v1/chat/completions',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Gateway-Authorization': `Bearer ${apiKey}`,
+          'Authorization': `Bearer ${apiKey}`,
         },
-        body: JSON.stringify({ contents }),
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: contents,
+          stream: true,
+        }),
       }
     );
 
-    if (!geminiResponse.ok) {
-      const errorText = await geminiResponse.text();
-      console.error('Gemini API error:', errorText);
+    if (!openaiResponse.ok) {
+      const errorText = await openaiResponse.text();
+      console.error('OpenAI API error:', errorText);
       return new Response(
         JSON.stringify({ error: 'Failed to get AI response', details: errorText }),
-        { status: geminiResponse.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: openaiResponse.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -78,7 +82,7 @@ Deno.serve(async (req) => {
     }
 
     // Stream the response back to client
-    return new Response(geminiResponse.body, {
+    return new Response(openaiResponse.body, {
       headers: {
         ...corsHeaders,
         'Content-Type': 'text/event-stream',

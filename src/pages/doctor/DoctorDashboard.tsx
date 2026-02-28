@@ -2,19 +2,17 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MainLayout } from '@/components/layouts/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { consultationApi, prescriptionApi } from '@/db/api';
+import { consultationApi } from '@/db/api';
 import type { Consultation } from '@/types';
-import { Calendar, FileText, Users, Activity, Clock } from 'lucide-react';
+import { Calendar, Activity, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function DoctorDashboard() {
   const { profile } = useAuth();
-  const { t } = useLanguage();
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [pendingConsultations, setPendingConsultations] = useState<Consultation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,14 +26,33 @@ export default function DoctorDashboard() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [allConsultations, pending] = await Promise.all([
-        consultationApi.getDoctorConsultations(profile!.id, undefined, 10),
-        consultationApi.getPendingConsultations(10),
-      ]);
-      setConsultations(allConsultations);
-      setPendingConsultations(pending);
+      
+      if (!profile?.id) {
+        console.warn('No profile ID available');
+        setConsultations([]);
+        setPendingConsultations([]);
+        return;
+      }
+
+      try {
+        const allConsultations = await consultationApi.getDoctorConsultations(profile.id, undefined, 10);
+        setConsultations(allConsultations || []);
+      } catch (error) {
+        console.error('Failed to load doctor consultations:', error);
+        setConsultations([]);
+      }
+
+      try {
+        const pending = await consultationApi.getPendingConsultations(10);
+        setPendingConsultations(pending || []);
+      } catch (error) {
+        console.error('Failed to load pending consultations:', error);
+        setPendingConsultations([]);
+      }
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
+      setConsultations([]);
+      setPendingConsultations([]);
     } finally {
       setLoading(false);
     }
@@ -82,10 +99,15 @@ export default function DoctorDashboard() {
 
   const handleAcceptConsultation = async (consultationId: string) => {
     try {
-      await consultationApi.assignDoctor(consultationId, profile!.id);
-      loadData();
+      if (!profile?.id) {
+        console.error('No profile ID available');
+        return;
+      }
+      await consultationApi.assignDoctor(consultationId, profile.id);
+      await loadData();
     } catch (error) {
       console.error('Failed to accept consultation:', error);
+      // Don't throw error, just log it
     }
   };
 
